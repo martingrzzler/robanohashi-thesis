@@ -41,6 +41,8 @@
 \RequirePackage{setspace}
 \RequirePackage{hyperref}
 \RequirePackage{caption}
+\RequirePackage{fontspec}
+\RequirePackage{zxjatype}
 
 %-------------------------------------------------------------------------------
 %  Styles as required
