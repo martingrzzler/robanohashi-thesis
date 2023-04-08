@@ -43,6 +43,7 @@
 \RequirePackage{caption}
 \RequirePackage{fontspec}
 \RequirePackage{zxjatype}
+\RequirePackage{amsmath}
 
 %-------------------------------------------------------------------------------
 %  Styles as required
