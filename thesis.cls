@@ -44,6 +44,8 @@
 \RequirePackage{fontspec}
 \RequirePackage{zxjatype}
 \RequirePackage{amsmath}
+\RequirePackage[utf8]{inputenc}
+
 
 %-------------------------------------------------------------------------------
 %  Styles as required
