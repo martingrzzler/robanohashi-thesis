@@ -238,7 +238,7 @@ WaniKani & $0.47$ & $0.15$ \\
 \end{tabular}
 \label{tab:multipartite_rank_centrality}
 \end{table}
-All ANOVAS's have been highly significant. As can be seen, all algorithms show a similar trend that is very promising. Overall the graph-based algorithms are slightly better and MultipartiteRank was the only one that had a significant interaction between GPT-3 mnemonics and paragraphs, favoring the former as expected. The best results are plotted in Figure \ref{figure:mpr_centrality}. I suspect that the statistical models are better suited for larger text samples as word frequency is an important feature for identifying keyphrases. The graph-based models are perhaps better at capturing these strong connection as I described them earlier since graphs allow the models to represent semantic relationships between words and phrases.
+All ANOVAS's have been highly significant. As can be seen, all algorithms show a similar trend that is very promising. Overall the graph-based algorithms are slightly better and MultipartiteRank was the only one that had a significant interaction between GPT-3 mnemonics and paragraphs, favoring the former as expected. The best results are plotted in Figure \ref{figure:mpr_centrality}. I suspect that the statistical models are better suited for larger text samples as word frequency is an important feature for identifying keyphrases. The graph-based models are perhaps better at capturing these strong connection as I described them earlier since graphs allow the models to represent semantic relationships between words and phrases. Another simpler explanation could be that the difference between the two paradigms is due to the fact I can set POS tags considered as keywords for the graph-based algorithms. By default VERBs are not included, which is why I added them. This option was not available however for the statistical models at least in the implementations provided by \texttt{pke}. 
 \begin{figure}
     \centering
     \includegraphics[width=400pt]{resources/mpr_centrality.png}
@@ -246,7 +246,35 @@ All ANOVAS's have been highly significant. As can be seen, all algorithms show a
     \label{figure:mpr_centrality}
 \end{figure}
 
+Given the success of matching the overlap of keywords and input words led me to question whether the linguistic features sensory modality, imageability and concreteness could significantly separate the groups if they were applied only to the keywords. All of these tests had been statistically insignificant as well. However limiting the number of evaluated keywords to the length of the input words had a significant effect for concreteness and imageability. Despite this I decided to exclude their contribution to the final metric as the only way to get a perfect score would require the input word imageability ratings to all equal 1. So instead of getting an estimate of how imageable the mnemonic is, you would instead get a scalar that indicates how imageable the top $n$ keywords are, which ideally are the input words and therefore I'd simply rate the imageability of the input words. Since the quality of the mnemonic should be independant of the input words I attempted to only score the imageability of the top $n$ keywords ($n = len(\text{input words})$) that do not include any input words. While these keywords may not include the input words, they could perhaps still be complementary to them and therefore be more vivid. This turned out to be insignificant as well.
 
+To conclude this chapter I propose a simplified metric that is essentially equivalent to \emph{recall}. Based on my previous findings (Figure \ref{figure:mpr_centrality} Multipartite Rank is used to extract keywords from the mnemonics and the score is simply the proportion of keywords that includes input words. Once an input word is found in the mnemonic it is only counted once. 
+\begin{equation}
+    S(K, I) = \frac{\sum_{i=1}^{|I|} 1(k_i \in I)}{|I|}
+\end{equation}
+This metric is closer to the initial hypothesis, namely, the set of $n$ top keywords should be the set of input words. It is also simpler as it does not depend on the weights of the underlying keyword extraction algorithm. Most importantly, it does a great job at separating the groups. The results are found in Table \ref{tab:final_metric_recall} and Figure \ref{figure:recall}.
+\begin{table}[ht] 
+\centering
+\caption{Means and Standard Deviations for Recall}
+\label{table:group_stats}
+\begin{tabular}{lcc}
+\toprule
+Group & M & SD\\
+\midrule
+GPT-2& $0.18$ & $0.22$ \\
+GPT-3 (mnemonic) & $0.51$ & $0.25$ \\
+GPT-3 (paragraph)& $0.37$ & $0.24$ \\
+WaniKani & $0.66$ & $0.26$ \\
+\bottomrule
+\end{tabular}
+\label{tab:final_metric_recall}
+\end{table}
+\begin{figure}
+    \centering
+    \includegraphics[width=400pt]{resources/recall.png}
+    \caption{Recall}
+    \label{figure:recall}
+\end{figure}
 
 
 

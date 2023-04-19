@@ -46,6 +46,7 @@
 \RequirePackage{amsmath}
 \RequirePackage[utf8]{inputenc}
 \RequirePackage{booktabs}
+\RequirePackage{bbm}
 
 
 %-------------------------------------------------------------------------------
