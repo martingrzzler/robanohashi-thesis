@@ -1,22 +1,24 @@
 \section{Feature evaluation} \label{sec:body_feature_evaluation}
 
-Concluding chapter \ref{sec:body_relevant_features} I have identified the following features that describe effective mnemonics. 
+Summarizing chapter \ref{sec:body_relevant_features} I have identified the following features:
 \begin{enumerate}
-    \item word vividness (imageability, concreteness)
-    \item bizarreness of mental imagery
+    \item vividness (imageability, concreteness)
+    \item bizarre mental imagery
     \item centrality of input words with strong connections in the output
 \end{enumerate}
+All features are tested individually. Additionally, an attempt was made to let the mnemonics be evaluated by GPT-3 similar to how a human would do it. 
+Finally, I propose a quantitative method that uses the centrality feature.
 
-\subsection{Word vividness}
-\textbf{Word norms}: Given the existing research it is plausible to start with quantifying the vividness of the mnemonics. It would be perhaps ideal to train a model that outputs a score that captures the vividness of the input text. Unfortunately I was unable to find such data. In the field of psycho-linguistics however norms of words exist. Several datasets are available that incorporate human word scores for different norms. Norms relevant to my research are: imageability, concreteness and sensory modality. The latter seems useful as words that are strongly identified with different senses are likely to be very concrete and contribute to vivid imagery.
+\subsection{Vividness}
+\textbf{Word norms}: Given the existing research it is plausible to start with quantifying the vividness of the mnemonics. It would be perhaps ideal to train a model that outputs a score that captures the vividness of the input text. Unfortunately I was unable to find such data. In the field of psycho-linguistics, however, norms of words exist. Several datasets are available that incorporate human word scores for different norms. Norms relevant to my research are: imageability, concreteness and sensory modality. The latter seems useful as words that are strongly identified with different senses are likely to be very concrete and contribute to vivid imagery.
 
 One limitation that quickly emerges is that these datasets tend to be rather small and using them on their own won't cover enough words to be used effectively. Several successful attempts have been made to extend these norm datasets by training models that identify features from word embeddings \cite{concr_embed_bert, img_concr_svm, fusing_ctx_embed_concr}.
 
 \cite{concr_embed_bert} referred to research showing that concrete word embeddings tend to cluster with other concrete ones while abstract ones show the same general behavior. This is not surprising as embeddings from increasingly sophisticated models encode features of text extracted from enormous corpora.
 
-I mostly copied the architecture described in their paper to fine-tune DistilBERT for the regression task of predicting a concreteness scalar $c \in [0,1]$. In addition to the generous dataset of 40000 human concreteness ratings \cite{40000_concr} I trained the model with another 60000 multi word expressions from \cite{60000_concr}. This allows me to evaluate phrases rather than just words of the mnemonics in terms of concreteness. The fine-tuned model achieved a Pearson correlation of $0.88$ with the test data. Ten percent of the dataset had been used for testing. While this result is good the models of the paper performed up to $0.92$ in correlation.This gap in performance could be explained by the additional dataset used on my part. I suspect that it becomes less trivial to assess concreteness adding multi-word expressions to the training data.
+The architecture used in their paper was used to fine-tune DistilBERT for the regression task of predicting a concreteness scalar $c \in [0,1]$. In addition to the generous dataset of 40000 human concreteness ratings \cite{40000_concr} I trained the model with another 60000 multi word expressions from \cite{60000_concr}. This allows me to evaluate phrases rather than just words of the mnemonics in terms of concreteness. The fine-tuned model achieved a Pearson correlation of $0.88$ with the test data. Ten percent of the dataset had been used for testing. While this result is good the models of the paper performed up to $0.92$ in correlation.This gap in performance could be explained by the additional dataset used on my part. I suspect that it becomes less trivial to assess concreteness adding multi-word expressions to the training data.
 
-To support that point I have fine-tuned BERT as described in the paper with just using the 40000 word ratings. This model achieved a Pearson correlation of $0.918$ which is close enough to confirm their results.
+To support that point I have fine-tuned BERT as described in the paper by just using the 40000 word ratings. This model achieved a Pearson correlation of $0.918$ which is close enough to confirm their results.
 
 On a side note I hypothesized that more recent multi-modal models like CLIP are perhaps better suited for the task of predicting concreteness as they learn embeddings from text combined with images. My idea is that more abstract terms are in a different embedding space than concrete ones because they tend to have less distinct images associated with them. The set of possible images for the word \emph{cow} is probably a lot smaller than for the word \emph{female}.
 
@@ -130,7 +132,7 @@ WaniKani & $0.582$ & $0.063$ \\
 \textbf{Discussion}: The ANOVAS's for all features were significant ($p < 0.05$). However, the differences are not very striking and the significant interaction terms between groups often show the opposite trend of what I had hoped for. Namely the paragraphs from GPT-3 often and GPT-2 generated mnemonics often have a higher overall mean than GPT-3 mnemonics and the WaniKani mnemonics.
 
 I have also tried to use the $median$ and $maximum$ of mnemonic scores, but the results are comparable and therefore of no further interest. Given these results I conclude that simple metrics like $mean$, $median$, and $maximum$ of language norm scores over all tokenized words of individual mnemonics aren't very useful in separating the groups.
-\subsection{Bizarreness}
+\subsection{Bizarre Imagery}
 Based on the observation that bizarre language uses words that are not commonly found together we may get some estimate of how bizarre a mnemonic is, based on the probability of their content occurring. To clarify this the phrase "a horse and a tiger racing each other" is probably a lot less likely to occur than seeing the phrase "two cars racing each other".
 
 \textbf{Method}: To get a value for how likely text is to occur I will use perplexity scalars. This metric was explained earlier in Chapter \ref{sec:perplexity} (Equation \ref{eq:ppl}). One reason to be careful with this metric is that its measures are dependant on the training data and model architecture. For the experiment I used GPT-2 based perplexity which was trained with a dataset called WebText. This dataset was never fully published but contains mostly text from web pages that had been scraped by following outbound links from Reddit \cite{gpt2_hugging_face}. The results are shown in Table \ref{tab:ppl_whole_mnemonic} and plotted in Figure \ref{figure:ppl_whole_mnemonic}.     
@@ -235,7 +237,7 @@ WaniKani & $0.47$ & $0.15$ \\
 \label{tab:multipartite_rank_centrality}
 \end{table}
 
-\textbf{Discussion:} All ANOVAS's have been highly significant. As can be seen, all algorithms show a similar trend that is very promising. Overall the graph-based algorithms are slightly better and MultipartiteRank was the only one that had a significant interaction between GPT-3 mnemonics and paragraphs, favoring the former as expected. The best results are plotted in Figure \ref{figure:mpr_centrality}. I suspect that the statistical models are better suited for larger text samples as word frequency is an important feature for identifying keyphrases. The graph-based models are perhaps better at capturing the input words since graphs allow the models to represent semantic relationships between words and phrases. I hoped to quantify strong connections between input words. The graph, forming edges between nodes allows for that application.
+\textbf{Discussion:} All ANOVA's have been highly significant. As can be seen, all algorithms show a similar trend that is very promising. Overall the graph-based algorithms are slightly better and MultipartiteRank was the only one that had a significant interaction between GPT-3 mnemonics and paragraphs, favoring the former as expected. The best results are plotted in Figure \ref{figure:mpr_centrality}. I suspect that the statistical models are better suited for larger text samples as word frequency is an important feature for identifying keyphrases. The graph-based models are perhaps better at capturing the input words since graphs allow the models to represent semantic relationships between words and phrases. I hoped to quantify strong connections between input words. The graph, forming edges between nodes allows for that application.
 \begin{figure}
     \centering
     \includegraphics[width=400pt]{resources/mpr_centrality.png}
@@ -298,7 +300,7 @@ To conclude this chapter I propose a simplified metric that is essentially equiv
 \begin{equation}
     S(K, I) = \frac{\sum_{i=1}^{|I|} 1(k_i \in I)}{|I|}
 \end{equation}
-This metric is closer to the initial hypothesis, namely, the set of $n$ top keywords should be the set of input words. It is also simpler as it does not depend on the weights of the underlying keyword extraction algorithm. Most importantly, it does a great job at separating the groups. The results are found in Table \ref{tab:final_metric_recall} and Figure \ref{figure:recall}.
+This metric is closer to the initial hypothesis, namely, the set of $n$ top keywords should be the set of input words. It is also simpler as it does not depend on the weights of the underlying keyword extraction algorithm. Most importantly, it separates the groups as was expected. The results are found in Table \ref{tab:final_metric_recall} and Figure \ref{figure:recall}.
 \begin{table}[ht] 
 \centering
 \caption{Means and Standard Deviations for Recall}
