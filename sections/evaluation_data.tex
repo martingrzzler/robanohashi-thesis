@@ -18,7 +18,7 @@ For the GPT-3 prompts the \texttt{text-davinci-003} GPT-3 model was used, which 
     \item[Paragraph] Write a short paragraph that includes the following words: drunkard, plow, planting
     \item[Mnemonic] Write a short paragraph long mnemonic story that is based on and must include the words: drunkard, plow, planting
 \end{description}
-\subsection{Constrained Beam Search}
+
 For the low end examples I used a 1.5B parameter version of GPT-2 \cite{radford2019language}. Since a non fine-tuned GPT-2 model is not very good in providing sensible output given similar prompts to the ones above, I had to use \emph{constrained beam search} in order to ensure the requirement of including all input words.
 
 Instead of just using the most likely token at each generation step given the previous tokens, commonly referred to as \emph{greedy search}, beam search keeps track of the $n$ most probable candidates at every time step and uses them as context for the next iteration \cite{kim2022guiding}. The constrained version of the method forces the tokens that must be included in the output as possible extensions of the previous tokens and divides candidates into so-called \emph{banks}. Each bank is defined by how many of the constrained tokens are included in the candidate. Following, the $n$ candidates for the next iteration are selected by round-robin, taking the most likely candidate from each bank until $n$ is reached. The banks are also sorted by how many of the constraint tokens they include in their candidates. The process is visualized in Figure \ref{figure:constrained_beam_search_example}.  
@@ -30,4 +30,4 @@ Instead of just using the most likely token at each generation step given the pr
 \end{figure}
 \newline
 \newline
-In conclusion, we expect the developed metric to separate the groups. Wanikani mnemonics should score significantly higher than GPT-2 based mnemonics. Given the GPT-3 prompts we also anticipate that both should score higher than the GPT-2 mnemonics. GPT-3 mnemonics may be close to or even surpass the WaniKani mnemonics. GPT-3 paragraphs are expected to score lower than WaniKani mnemonics.
+In conclusion, I expect the developed metric to separate the groups. Wanikani mnemonics should score significantly higher than GPT-2 based mnemonics. Given the GPT-3 prompts we also anticipate that both should score higher than the GPT-2 mnemonics. GPT-3 mnemonics may be close to or even surpass the WaniKani mnemonics. GPT-3 paragraphs are expected to score lower than WaniKani mnemonics.
